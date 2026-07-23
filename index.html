@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌿 生态瓶模拟实验 - 500ml密封生态瓶</title>
+    <style>
+        :root {
+            --bg: #f5f0e8;
+            --panel-bg: #ffffff;
+            --text: #3e3a35;
+            --text-light: #6b635b;
+            --accent: #4a9c6c;
+            --accent-dark: #357a52;
+            --danger: #c0392b;
+            --warning: #e67e22;
+            --safe: #27ae60;
+            --water-clean: #c8e6f5;
+            --water-warn: #e8d5a3;
+            --water-danger: #e8c5b8;
+            --bottle-glass: rgba(180, 210, 230, 0.35);
+            --bottle-border: rgba(140, 175, 200, 0.6);
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+            background: linear-gradient(160deg, #e8f0e3 0%, #f0ede4 30%, #e8ecf1 60%, #f5f0e8 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--text);
+            user-select: none;
+            -webkit-user-select: none;
+            padding: 20px;
+        }
+
+        /* 顶部标题栏 */
+        .header {
+            text-align: center;
+            margin-bottom: 22px;
+        }
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #3a7d5a, #4a9c6c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 0.02em;
+            margin-bottom: 4px;
+        }
+        .header .subtitle {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            letter-spacing: 0.04em;
+        }
+        .capacity-badge {
+            display: inline-block;
+            background: #fff;
+            border: 1.5px solid #d0d5c8;
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-size: 0.82rem;
+            color: var(--text-light);
+            margin-top: 4px;
+            letter-spacing: 0.03em;
+        }
+
+        /* 主布局 */
+        .main-container {
+            display: flex;
+            gap: 20px;
+            max-width: 1350px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        /* 面板通用 */
+        .panel {
+            background: var(--panel-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px 22px;
+            transition: var(--transition);
+        }
+        .panel:hover {
+            box-shadow: var(--shadow-lg);
+        }
+        .panel-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text);
+            letter-spacing: 0.02em;
+            border-bottom: 2px solid #eef2e8;
+            padding-bottom: 10px;
+        }
+        .panel-title .icon {
+            font-size: 1.3rem;
+        }
+
+        /* 左侧材料面板 */
+        .materials-panel {
+            width: 260px;
+            flex-shrink: 0;
+        }
+        .material-card {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 14px;
+            margin-bottom: 8px;
+            border-radius: var(--radius-sm);
+            background: #fafaf7;
+            border: 1.5px solid #e8e5dd;
+            cursor: grab;
+            transition: var(--transition);
+            position: relative;
+            font-size: 0.9rem;
+        }
+        .material-card:hover {
+            border-color: #c5c0b5;
+            background: #f7f5f0;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+        }
+        .material-card:active {
+            cursor: grabbing;
+            transform: scale(0.97);
+        }
+        .material-card .mat-icon {
+            font-size: 1.8rem;
+            flex-shrink: 0;
+            width: 38px;
+            text-align: center;
+        }
+        .material-card .mat-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .material-card .mat-name {
+            font-weight: 600;
+            font-size: 0.88rem;
+            color: var(--text);
+        }
+        .material-card .mat-unit {
+            font-size: 0.73rem;
+            color: var(--text-light);
+        }
+        .material-card .mat-role {
+            font-size: 0.68rem;
+            color: #999;
+            margin-top: 1px;
+        }
+        .material-card .btn-add {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1.5px solid #c5c0b5;
+            background: #fff;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            flex-shrink: 0;
+            color: #6b635b;
+        }
+        .material-card .btn-add:hover {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+        .chlorine-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 6px;
+            font-size: 0.78rem;
+            color: var(--text-light);
+            padding: 6px 10px;
+            background: #fffbf5;
+            border-radius: 8px;
+            border: 1px dashed #e0d5b8;
+        }
+        .chlorine-toggle input {
+            accent-color: var(--accent);
+            width: 15px;
+            height: 15px;
+        }
+        .chlorine-warning {
+            font-size: 0.7rem;
+            color: var(--danger);
+            margin-top: 3px;
+            display: none;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+        .chlorine-warning.active {
+            display: block;
+        }
+
+        /* 中间生态瓶面板 */
+        .bottle-panel {
+            flex: 1;
+            min-width: 380px;
+            max-width: 520px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .bottle-wrapper {
+            position: relative;
+            width: 220px;
+            height: 340px;
+            margin: 10px auto 16px;
+        }
+        /* 瓶子SVG */
+        .bottle-svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.12));
+        }
+        .bottle-glass-shape {
+            fill: var(--bottle-glass);
+            stroke: var(--bottle-border);
+            stroke-width: 3;
+            transition: fill 0.6s ease;
+        }
+        .bottle-water {
+            transition: all 0.6s ease;
+        }
+        .bottle-water.clean {
+            fill: rgba(160, 210, 235, 0.55);
+        }
+        .bottle-water.warn {
+            fill: rgba(210, 185, 140, 0.5);
+        }
+        .bottle-water.danger {
+            fill: rgba(200, 155, 135, 0.5);
+        }
+        .bottle-water.toxic {
+            fill: rgba(190, 140, 120, 0.55);
+        }
+        .bottle-label {
+            text-align: center;
+            font-size: 0.78rem;
+            color: var(--text-light);
+            letter-spacing: 0.04em;
+        }
+        .bottle-contents-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: center;
+            margin-top: 8px;
+            min-height: 28px;
+            align-items: center;
+        }
+        .bottle-contents-list .content-tag {
+            font-size: 0.75rem;
+            background: #f0f5ec;
+            border-radius: 14px;
+            padding: 3px 10px;
+            border: 1px solid #d8e0d0;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .bottle-contents-list .content-tag:hover {
+            background: #ffe8e0;
+            border-color: #e0b8a8;
+        }
+        .content-tag .remove-x {
+            font-size: 0.7rem;
+            color: #c0392b;
+            font-weight: 700;
+            margin-left: 2px;
+        }
+        .liquid-indicator {
+            font-size: 0.78rem;
+            color: var(--text-light);
+            margin-top: 4px;
+            letter-spacing: 0.03em;
+        }
+        .liquid-indicator .liquid-fill {
+            font-weight: 700;
+            color: var(--accent);
+        }
+        .liquid-indicator .liquid-max {
+            color: #999;
+        }
+
+        /* 右侧记录面板 */
+        .record-panel {
+            width: 340px;
+            flex-shrink: 0;
+            max-height: 620px;
+            overflow-y: auto;
+        }
+        .record-table-wrap {
+            max-height: 420px;
+            overflow-y: auto;
+            border-radius: 8px;
+            border: 1px solid #e8e5dd;
+        }
+        .record-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.7rem;
+            letter-spacing: 0.02em;
+        }
+        .record-table th,
+        .record-table td {
+            padding: 6px 7px;
+            text-align: center;
+            border-bottom: 1px solid #f0ede6;
+            white-space: nowrap;
+        }
+        .record-table th {
+            background: #f9f8f4;
+            font-weight: 700;
+            font-size: 0.66rem;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            color: var(--text-light);
+            letter-spacing: 0.03em;
+        }
+        .record-table td {
+            font-size: 0.68rem;
+        }
+        .record-table .status-safe {
+            color: #fff;
+            background: #27ae60;
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-weight: 600;
+            font-size: 0.65rem;
+        }
+        .record-table .status-warn {
+            color: #fff;
+            background: #e67e22;
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-weight: 600;
+            font-size: 0.65rem;
+        }
+        .record-table .status-danger {
+            color: #fff;
+            background: #c0392b;
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-weight: 600;
+            font-size: 0.65rem;
+        }
+        .record-table .dead-cell {
+            color: #c0392b;
+            font-weight: 700;
+        }
+        .highlight-row {
+            background: #fff9f0 !important;
+            animation: highlightFade 1.5s ease-out;
+        }
+        @keyframes highlightFade {
+            0% {
+                background: #ffe0c0;
+            }
+            100% {
+                background: #fff9f0;
+            }
+        }
+
+        /* 控制按钮区 */
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 16px;
+            align-items: center;
+        }
+        .btn {
+            padding: 10px 20px;
+            border-radius: 24px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.88rem;
+            letter-spacing: 0.03em;
+            transition: var(--transition);
+            font-family: inherit;
+            white-space: nowrap;
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 3px 12px rgba(74, 156, 108, 0.3);
+        }
+        .btn-primary:hover {
+            background: var(--accent-dark);
+            box-shadow: 0 5px 18px rgba(74, 156, 108, 0.4);
+            transform: translateY(-1px);
+        }
+        .btn-primary:disabled {
+            background: #b0c5b8;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+        .btn-outline {
+            background: #fff;
+            border: 1.5px solid #d0d5c8;
+            color: var(--text);
+        }
+        .btn-outline:hover {
+            background: #f5f3ed;
+            border-color: #b5b0a5;
+        }
+        .btn-danger {
+            background: #fff;
+            border: 1.5px solid #e0c0b8;
+            color: #c0392b;
+        }
+        .btn-danger:hover {
+            background: #fdf5f3;
+            border-color: #c0392b;
+        }
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 0.78rem;
+            border-radius: 18px;
+        }
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+        .speed-control select {
+            padding: 5px 10px;
+            border-radius: 14px;
+            border: 1.5px solid #d0d5c8;
+            font-family: inherit;
+            font-size: 0.8rem;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        /* 预测结果卡片 */
+        .prediction-card {
+            background: linear-gradient(135deg, #fdfcf8, #faf7ef);
+            border: 1.5px solid #e0dcc8;
+            border-radius: var(--radius-sm);
+            padding: 14px 18px;
+            margin-top: 14px;
+            text-align: center;
+        }
+        .prediction-card h4 {
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+        .prediction-stats {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .pred-stat {
+            text-align: center;
+        }
+        .pred-stat .stat-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        .pred-stat .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-light);
+        }
+        .pred-stat .stat-value.doomed {
+            color: #c0392b;
+        }
+
+        /* 提示气泡 */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #3e3a35;
+            color: #fff;
+            padding: 10px 22px;
+            border-radius: 22px;
+            font-size: 0.85rem;
+            z-index: 999;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.35s ease, transform 0.35s ease;
+            letter-spacing: 0.03em;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        .toast.warn-toast {
+            background: #c0392b;
+        }
+
+        /* 滚动条美化 */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d5d0c5;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #b5b0a0;
+        }
+
+        /* 响应式 */
+        @media (max-width: 1100px) {
+            .main-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .materials-panel {
+                width: 100%;
+                max-width: 500px;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                justify-content: center;
+                padding: 14px;
+            }
+            .material-card {
+                flex: 0 0 auto;
+                width: 130px;
+                flex-direction: column;
+                text-align: center;
+                gap: 4px;
+                padding: 10px 8px;
+                margin-bottom: 0;
+            }
+            .material-card .mat-icon {
+                font-size: 1.5rem;
+                width: auto;
+            }
+            .material-card .btn-add {
+                width: 26px;
+                height: 26px;
+                font-size: 0.9rem;
+            }
+            .bottle-panel {
+                min-width: auto;
+                max-width: 400px;
+                width: 100%;
+            }
+            .record-panel {
+                width: 100%;
+                max-width: 500px;
+                max-height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 顶部标题 -->
+    <div class="header">
+        <h1>🌿 生态瓶模拟实验</h1>
+        <div class="subtitle">密闭生态系统的动态平衡仿真</div>
+        <div class="capacity-badge">🔬 500ml 密封生态瓶 · 透光 · 含少量空气</div>
+    </div>
+
+    <!-- 主布局 -->
+    <div class="main-container">
+        <!-- 左侧：材料面板 -->
+        <div class="panel materials-panel" id="materialsPanel">
+            <div class="panel-title"><span class="icon">🧪</span>实验材料</div>
+            <div style="font-size:0.7rem;color:#999;margin-bottom:10px;">拖拽材料或点击 + 放入生态瓶</div>
+
+            <div class="material-card" draggable="true" data-material="hornwort" data-name="金鱼藻" data-unit="株" data-type="plant">
+                <span class="mat-icon">🌿</span>
+                <div class="mat-info"><div class="mat-name">金鱼藻</div><div class="mat-unit">1株 · 生产者</div><div class="mat-role">光合产氧·吸收氨氮</div></div>
+                <button class="btn-add" onclick="addMaterial('hornwort')" title="添加1株">+</button>
+            </div>
+
+            <div class="material-card" draggable="true" data-material="zebrafish" data-name="斑马鱼" data-unit="条" data-type="fish">
+                <span class="mat-icon">🐟</span>
+                <div class="mat-info"><div class="mat-name">斑马鱼</div><div class="mat-unit">1条 · 消费者</div><div class="mat-role">耗氧·产氨氮</div></div>
+                <button class="btn-add" onclick="addMaterial('zebrafish')" title="添加1条">+</button>
+            </div>
+
+            <div class="material-card" draggable="true" data-material="applesnail" data-name="苹果螺" data-unit="只" data-type="snail">
+                <span class="mat-icon">🐌</span>
+                <div class="mat-info"><div class="mat-name">苹果螺</div><div class="mat-unit">1只 · 清道夫</div><div class="mat-role">耐低氧·食藻</div></div>
+                <button class="btn-add" onclick="addMaterial('applesnail')" title="添加1只">+</button>
+            </div>
+
+            <div class="material-card" draggable="true" data-material="riverwater" data-name="河水" data-unit="ml" data-type="water" data-volume="50">
+                <span class="mat-icon">💧</span>
+                <div class="mat-info"><div class="mat-name">河水</div><div class="mat-unit">50ml · 含硝化菌</div><div class="mat-role">引入微生物菌群</div></div>
+                <button class="btn-add" onclick="addMaterial('riverwater')" title="添加50ml">+</button>
+            </div>
+
+            <div class="material-card" draggable="true" data-material="tapwater" data-name="自来水" data-unit="ml" data-type="water" data-volume="50">
+                <span class="mat-icon">🚰</span>
+                <div class="mat-info"><div class="mat-name">自来水</div><div class="mat-unit">50ml · 含余氯⚠️</div><div class="mat-role">需晾晒除氯</div></div>
+                <button class="btn-add" onclick="addMaterial('tapwater')" title="添加50ml">+</button>
+            </div>
+            <div class="chlorine-toggle">
+                <input type="checkbox" id="chlorineRemoved" onchange="toggleChlorine()">
+                <label for="chlorineRemoved">✅ 已晾晒除氯（推荐）</label>
+            </div>
+            <div class="chlorine-warning" id="chlorineWarning">⚠️ 未除氯！余氯将对生物和硝化菌有毒</div>
+
+            <div class="material-card" draggable="true" data-material="soil" data-name="营养土" data-unit="g" data-type="soil" data-volume="5">
+                <span class="mat-icon">🟫</span>
+                <div class="mat-info"><div class="mat-name">营养土</div><div class="mat-unit">5g · 底质</div><div class="mat-role">缓释营养·携带菌群</div></div>
+                <button class="btn-add" onclick="addMaterial('soil')" title="添加5g">+</button>
+            </div>
+
+            <div class="material-card" draggable="true" data-material="gravel" data-name="小碎石" data-unit="g" data-type="gravel" data-volume="20">
+                <span class="mat-icon">🪨</span>
+                <div class="mat-info"><div class="mat-name">小碎石</div><div class="mat-unit">20g · 底床</div><div class="mat-role">硝化菌附着面</div></div>
+                <button class="btn-add" onclick="addMaterial('gravel')" title="添加20g">+</button>
+            </div>
+        </div>
+
+        <!-- 中间：生态瓶可视化 -->
+        <div class="panel bottle-panel" id="bottlePanel"
+        ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+        <div class="panel-title"><span class="icon">🫙</span>500ml 生态瓶</div>
+        <div class="bottle-wrapper" id="bottleWrapper">
+            <svg class="bottle-svg" viewBox="0 0 200 320" xmlns="http://www.w3.org/2000/svg">
+                <!-- 瓶颈 -->
+                <rect x="78" y="0" width="44" height="45" rx="8" fill="rgba(170,200,220,0.25)" stroke="rgba(140,175,200,0.55)" stroke-width="2.5"/>
+                <!-- 瓶肩过渡 -->
+                <path d="M78 45 Q78 58 58 65 L58 285 Q58 305 78 310 L122 310 Q142 305 142 285 L142 65 Q122 58 122 45" fill="rgba(175,210,230,0.3)" stroke="rgba(140,175,200,0.55)" stroke-width="2.8" stroke-linejoin="round"/>
+                <!-- 水面 -->
+                <rect id="waterSurface" x="60" y="100" width="80" height="205" rx="3" fill="rgba(160,210,235,0.5)" class="bottle-water clean"/>
+                <!-- 底部沉积物 -->
+                <rect id="sedimentLayer" x="62" y="295" width="76" height="12" rx="4" fill="rgba(140,120,90,0.4)"/>
+                <!-- 生物图标位置 -->
+                <text id="fishIcon1" x="95" y="175" font-size="16" opacity="0">🐟</text>
+                <text id="fishIcon2" x="110" y="200" font-size="15" opacity="0">🐟</text>
+                <text id="fishIcon3" x="85" y="220" font-size="14" opacity="0">🐟</text>
+                <text id="snailIcon1" x="130" y="280" font-size="14" opacity="0">🐌</text>
+                <text id="snailIcon2" x="105" y="290" font-size="13" opacity="0">🐌</text>
+                <text id="plantIcon1" x="75" y="150" font-size="18" opacity="0">🌿</text>
+                <text id="plantIcon2" x="100" y="140" font-size="16" opacity="0">🌿</text>
+                <text id="plantIcon3" x="115" y="155" font-size="15" opacity="0">🌿</text>
+                <!-- 气泡 -->
+                <circle id="bubble1" cx="90" cy="130" r="3" fill="rgba(255,255,255,0.6)" opacity="0"/>
+                <circle id="bubble2" cx="105" cy="120" r="2.5" fill="rgba(255,255,255,0.5)" opacity="0"/>
+                <circle id="bubble3" cx="82" cy="115" r="2" fill="rgba(255,255,255,0.55)" opacity="0"/>
+                <!-- 刻度标记 -->
+                <line x1="148" y1="100" x2="155" y2="100" stroke="#999" stroke-width="1"/>
+                <text x="156" y="104" font-size="8" fill="#888">400ml</text>
+                <line x1="148" y1="160" x2="155" y2="160" stroke="#999" stroke-width="1"/>
+                <text x="156" y="164" font-size="8" fill="#888">300ml</text>
+                <line x1="148" y1="220" x2="155" y2="220" stroke="#999" stroke-width="1"/>
+                <text x="156" y="224" font-size="8" fill="#888">200ml</text>
+                <line x1="148" y1="280" x2="155" y2="280" stroke="#999" stroke-width="1"/>
+                <text x="156" y="284" font-size="8" fill="#888">100ml</text>
+            </svg>
+        </div>
+        <div class="bottle-label">已添加材料：</div>
+        <div class="bottle-contents-list" id="bottleContents"></div>
+        <div class="liquid-indicator">液体量：<span class="liquid-fill" id="liquidFill">0</span> / <span class="liquid-max">500ml</span></div>
+        <div style="font-size:0.7rem;color:#999;margin-top:4px;" id="solidVolumeHint"></div>
+    </div>
+
+    <!-- 右侧：记录面板 -->
+    <div class="panel record-panel" id="recordPanel">
+        <div class="panel-title"><span class="icon">📋</span>实时记录表</div>
+        <div class="record-table-wrap" id="recordTableWrap">
+            <table class="record-table" id="recordTable">
+                <thead>
+                    <tr>
+                        <th>天数</th><th>🐟鱼</th><th>🐌螺</th><th>🌿藻</th>
+                        <th>氨氮<br>mg/L</th><th>亚硝酸<br>mg/L</th><th>硝酸<br>mg/L</th>
+                        <th>DO<br>mg/L</th><th>pH</th><th>评价</th><th>行为</th>
+                    </tr>
+                </thead>
+                <tbody id="recordBody">
+                    <tr id="rowDay0">
+                        <td>0</td><td id="d0_fish">0</td><td id="d0_snail">0</td><td id="d0_plant">良好</td>
+                        <td id="d0_nh3">0.00</td><td id="d0_no2">0.00</td><td id="d0_no3">0.00</td>
+                        <td id="d0_do">7.5</td><td id="d0_ph">7.20</td>
+                        <td><span class="status-safe">安全</span></td><td>初始设置</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- 预测结果 -->
+        <div class="prediction-card" id="predictionCard">
+            <h4>🔮 模拟预测</h4>
+            <div class="prediction-stats">
+                <div class="pred-stat">
+                    <div class="stat-value" id="predSurvival">--</div>
+                    <div class="stat-label">预计存活时间（天）</div>
+                </div>
+                <div class="pred-stat">
+                    <div class="stat-value" id="predStable">--</div>
+                    <div class="stat-label">稳定运行天数</div>
+                </div>
+                <div class="pred-stat">
+                    <div class="stat-value" id="predStatus">待开始</div>
+                    <div class="stat-label">生态瓶状态</div>
+                </div>
+            </div>
+            <div style="font-size:0.7rem;color:#999;margin-top:6px;" id="predDetail"></div>
+        </div>
+    </div>
+</div>
+
+<!-- 控制按钮 -->
+<div class="controls" id="controlsArea">
+    <button class="btn btn-primary" id="btnStart" onclick="startSimulation()">🔒 密封并开始模拟</button>
+    <button class="btn btn-outline btn-sm" id="btnStep" onclick="stepDay()" disabled>⏭ 推进1天</button>
+    <button class="btn btn-outline btn-sm" id="btnAuto" onclick="toggleAutoRun()" disabled>▶ 自动运行</button>
+    <button class="btn btn-danger btn-sm" id="btnReset" onclick="resetAll()">🔄 重置实验</button>
+    <div class="speed-control">
+        <span>速度：</span>
+        <select id="speedSelect" onchange="updateSpeed()">
+            <option value="2000">慢速 (2秒/天)</option>
+            <option value="1000" selected>正常 (1秒/天)</option>
+            <option value="500">快速 (0.5秒/天)</option>
+            <option value="200">极速 (0.2秒/天)</option>
+        </select>
+    </div>
+</div>
+
+<!-- 提示 -->
+<div class="toast" id="toast"></div>
+
+<script>
+    // ==================== 全局状态 ====================
+    const BOTTLE_MAX_LIQUID = 500; // ml 最大液体容量
+    const BOTTLE_NAME = "500ml生态瓶";
+
+    // 瓶内材料计数
+    let bottleContents = {
+        hornwort: 0, // 金鱼藻 株
+        zebrafish: 0, // 斑马鱼 条
+        applesnail: 0, // 苹果螺 只
+        riverwater: 0, // 河水 ml
+        tapwater: 0, // 自来水 ml
+        soil: 0, // 营养土 g
+        gravel: 0, // 小碎石 g
+    };
+
+    let chlorineRemoved = false; // 自来水是否除氯
+    let simulationRunning = false;
+    let simulationSealed = false; // 是否已密封
+    let autoRunInterval = null;
+    let autoRunSpeed = 1000; // ms/天
+    let currentDay = 0;
+    let lastDeathDay = null; // 最后一条鱼死亡的天数
+    let firstUnstableDay = null; // 首次出现不稳定指标的天数
+    let consecutiveStableDays = 0;
+    let stableRunDays = 0;
+    let survivalDays = null;
+
+    // 模拟状态变量（每日更新）
+    let simState = {
+        fishAlive: 0,
+        snailAlive: 0,
+        plantHealth: '良好', // 良好/发黄/腐烂
+        nh3: 0, // 氨氮 mg/L
+        no2: 0, // 亚硝酸盐 mg/L
+        no3: 0, // 硝酸盐 mg/L
+        do: 7.5, // 溶解氧 mg/L
+        ph: 7.2,
+        nitrificationMaturity: 0, // 硝化系统成熟度 0-100
+        soilDecompositionRate: 0, // 营养土分解速率
+    };
+
+    // 初始simState快照（密封时保存）
+    let initialSimState = null;
+
+    // ==================== DOM元素缓存 ====================
+    const $bottleContents = document.getElementById('bottleContents');
+    const $liquidFill = document.getElementById('liquidFill');
+    const $solidVolumeHint = document.getElementById('solidVolumeHint');
+    const $recordBody = document.getElementById('recordBody');
+    const $recordTableWrap = document.getElementById('recordTableWrap');
+    const $waterSurface = document.getElementById('waterSurface');
+    const $sedimentLayer = document.getElementById('sedimentLayer');
+    const $chlorineWarning = document.getElementById('chlorineWarning');
+    const $toast = document.getElementById('toast');
+    const $btnStart = document.getElementById('btnStart');
+    const $btnStep = document.getElementById('btnStep');
+    const $btnAuto = document.getElementById('btnAuto');
+    const $btnReset = document.getElementById('btnReset');
+    const $predSurvival = document.getElementById('predSurvival');
+    const $predStable = document.getElementById('predStable');
+    const $predStatus = document.getElementById('predStatus');
+    const $predDetail = document.getElementById('predDetail');
+    const $bottlePanel = document.getElementById('bottlePanel');
+
+    // ==================== 工具函数 ====================
+    function getTotalLiquid() {
+        return bottleContents.riverwater + bottleContents.tapwater;
+    }
+
+    function getSolidVolumeEstimate() {
+        // 估算固体占用的体积(ml)
+        return bottleContents.hornwort * 8 +
+            bottleContents.zebrafish * 3 +
+            bottleContents.applesnail * 2 +
+            bottleContents.soil * 0.6 +
+            bottleContents.gravel * 0.5;
+    }
+
+    function getWaterQualityClass() {
+        const s = simState;
+        if (s.nh3 > 0.5 || s.no2 > 0.1 || s.do < 2) return 'danger';
+        if (s.nh3 > 0.3 || s.no2 > 0.06 || s.do < 3.5) return 'warn';
+        if (chlorineRemoved === false && bottleContents.tapwater > 0 && currentDay <= 1) return 'toxic';
+        return 'clean';
+    }
+
+    function updateWaterVisual() {
+        const wqClass = getWaterQualityClass();
+        $waterSurface.classList.remove('clean', 'warn', 'danger', 'toxic');
+        $waterSurface.classList.add(wqClass);
+        // 调整水面高度
+        const liquidRatio = Math.min(getTotalLiquid() / BOTTLE_MAX_LIQUID, 1);
+        const minY = 285; // 最低水面位置(满水时接近底部上方)
+        const maxY = 100; // 最高水面位置(空水时在上方)
+        const waterTop = maxY + (1 - liquidRatio) * (minY - maxY);
+        $waterSurface.setAttribute('y', waterTop);
+        $waterSurface.setAttribute('height', 305 - waterTop);
+        // 沉积物层
+        const sedimentHeight = Math.min(18, 5 + bottleContents.soil * 0.5 + bottleContents.gravel * 0.15);
+        $sedimentLayer.setAttribute('y', 310 - sedimentHeight);
+        $sedimentLayer.setAttribute('height', sedimentHeight);
+        if (bottleContents.soil + bottleContents.gravel > 0) {
+            $sedimentLayer.setAttribute('opacity', '0.7');
+        } else {
+            $sedimentLayer.setAttribute('opacity', '0.2');
+        }
+    }
+
+    function updateBottleContentsList() {
+        let html = '';
+        const items = [
+            { key: 'hornwort', label: '金鱼藻', unit: '株', icon: '🌿' },
+            { key: 'zebrafish', label: '斑马鱼', unit: '条', icon: '🐟' },
+            { key: 'applesnail', label: '苹果螺', unit: '只', icon: '🐌' },
+            { key: 'riverwater', label: '河水', unit: 'ml', icon: '💧' },
+            { key: 'tapwater', label: '自来水', unit: 'ml', icon: '🚰' },
+            { key: 'soil', label: '营养土', unit: 'g', icon: '🟫' },
+            { key: 'gravel', label: '小碎石', unit: 'g', icon: '🪨' },
+        ];
+        let hasAny = false;
+        items.forEach(item => {
+            const count = bottleContents[item.key];
+            if (count > 0) {
+                hasAny = true;
+                html +=
+                    `<span class="content-tag" onclick="removeMaterial('${item.key}')" title="点击移除1${item.unit}">${item.icon} ${item.label} ×${count}${item.unit} <span class="remove-x">✕</span></span>`;
+            }
+        });
+        if (!hasAny) html = '<span style="font-size:0.75rem;color:#bbb;">（空）</span>';
+        $bottleContents.innerHTML = html;
+        $liquidFill.textContent = getTotalLiquid();
+        const solidVol = getSolidVolumeEstimate();
+        $solidVolumeHint.textContent = solidVol > 0 ? `固体估占体积约 ${solidVol.toFixed(0)}ml` : '';
+        updateWaterVisual();
+        updateBottleIcons();
+    }
+
+    function updateBottleIcons() {
+        // 更新瓶内生物图标
+        const fishIcons = ['fishIcon1', 'fishIcon2', 'fishIcon3'];
+        const snailIcons = ['snailIcon1', 'snailIcon2'];
+        const plantIcons = ['plantIcon1', 'plantIcon2', 'plantIcon3'];
+        const bubbleIcons = ['bubble1', 'bubble2', 'bubble3'];
+
+        fishIcons.forEach((id, i) => {
+            const el = document.getElementById(id);
+            if (el) el.setAttribute('opacity', i < bottleContents.zebrafish ? '1' : '0');
+        });
+        snailIcons.forEach((id, i) => {
+            const el = document.getElementById(id);
+            if (el) el.setAttribute('opacity', i < bottleContents.applesnail ? '1' : '0');
+        });
+        plantIcons.forEach((id, i) => {
+            const el = document.getElementById(id);
+            if (el) el.setAttribute('opacity', i < bottleContents.hornwort ? '1' : '0');
+        });
+        // 气泡在植物多且DO高时显示
+        const showBubbles = bottleContents.hornwort > 0 && simState.do > 4 && simState.plantHealth === '良好';
+        bubbleIcons.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.setAttribute('opacity', showBubbles ? '0.7' : '0');
+        });
+    }
+
+    function showToast(message, isWarning = false) {
+        $toast.textContent = message;
+        $toast.classList.remove('warn-toast');
+        if (isWarning) $toast.classList.add('warn-toast');
+        $toast.classList.add('show');
+        clearTimeout($toast._timeout);
+        $toast._timeout = setTimeout(() => {
+            $toast.classList.remove('show');
+        }, 2200);
+    }
+
+    // ==================== 材料操作 ====================
+    function addMaterial(materialKey) {
+        if (simulationSealed) {
+            showToast('🔒 生态瓶已密封！请先重置实验', true);
+            return;
+        }
+        if (simulationRunning) {
+            showToast('⏳ 模拟运行中，请先暂停或重置', true);
+            return;
+        }
+
+        const liquidTypes = ['riverwater', 'tapwater'];
+        if (liquidTypes.includes(materialKey)) {
+            const currentLiquid = getTotalLiquid();
+            if (currentLiquid + 50 > BOTTLE_MAX_LIQUID) {
+                showToast(`⚠️ 液体已达上限！${BOTTLE_NAME}最多容纳${BOTTLE_MAX_LIQUID}ml液体`, true);
+                return;
+            }
+            bottleContents[materialKey] += 50;
+        } else if (materialKey === 'soil') {
+            if (bottleContents.soil + 5 > 40) {
+                showToast('⚠️ 营养土过多（建议≤40g），过量会导致氨氮剧增', true);
+            }
+            bottleContents.soil += 5;
+        } else if (materialKey === 'gravel') {
+            if (bottleContents.gravel + 20 > 160) {
+                showToast('⚠️ 小碎石过多（建议≤160g），占用太多空间', true);
+            }
+            bottleContents.gravel += 20;
+        } else {
+            bottleContents[materialKey] += 1;
+        }
+
+        // 自来水余氯警告
+        if (materialKey === 'tapwater' && !chlorineRemoved && bottleContents.tapwater > 0) {
+            $chlorineWarning.classList.add('active');
+        }
+
+        updateBottleContentsList();
+        updatePredictionPreview();
+    }
+
+    function removeMaterial(materialKey) {
+        if (simulationSealed) {
+            showToast('🔒 生态瓶已密封！请先重置实验', true);
+            return;
+        }
+        if (simulationRunning) {
+            showToast('⏳ 模拟运行中，请先暂停或重置', true);
+            return;
+        }
+        const liquidTypes = ['riverwater', 'tapwater'];
+        if (liquidTypes.includes(materialKey)) {
+            if (bottleContents[materialKey] >= 50) {
+                bottleContents[materialKey] -= 50;
+            }
+        } else if (materialKey === 'soil') {
+            if (bottleContents.soil >= 5) bottleContents.soil -= 5;
+        } else if (materialKey === 'gravel') {
+            if (bottleContents.gravel >= 20) bottleContents.gravel -= 20;
+        } else {
+            if (bottleContents[materialKey] > 0) bottleContents[materialKey] -= 1;
+        }
+
+        if (bottleContents.tapwater === 0) {
+            $chlorineWarning.classList.remove('active');
+        }
+
+        updateBottleContentsList();
+        updatePredictionPreview();
+    }
+
+    function toggleChlorine() {
+        chlorineRemoved = document.getElementById('chlorineRemoved').checked;
+        if (chlorineRemoved) {
+            $chlorineWarning.classList.remove('active');
+            showToast('✅ 自来水已晾晒除氯，安全可用');
+        } else {
+            if (bottleContents.tapwater > 0) {
+                $chlorineWarning.classList.add('active');
+                showToast('⚠️ 未除氯的自来水含余氯，对生物有毒！', true);
+            }
+        }
+        updatePredictionPreview();
+    }
+
+    // ==================== 拖放支持 ====================
+    function handleDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'copy';
+        $bottlePanel.style.boxShadow = '0 0 0 3px rgba(74,156,108,0.4), 0 8px 32px rgba(0,0,0,0.12)';
+    }
+
+    function handleDragLeave(e) {
+        $bottlePanel.style.boxShadow = '';
+    }
+
+    function handleDrop(e) {
+        e.preventDefault();
+        $bottlePanel.style.boxShadow = '';
+        const materialKey = e.dataTransfer.getData('text/plain');
+        if (materialKey && !simulationSealed && !simulationRunning) {
+            addMaterial(materialKey);
+        } else if (simulationSealed || simulationRunning) {
+            showToast('🔒 请先重置实验再添加材料', true);
+        }
+    }
+
+    // 为所有材料卡片绑定dragstart
+    document.querySelectorAll('.material-card[draggable]').forEach(card => {
+        card.addEventListener('dragstart', (e) => {
+            const materialKey = card.getAttribute('data-material');
+            e.dataTransfer.setData('text/plain', materialKey);
+            e.dataTransfer.effectAllowed = 'copy';
+            card.style.opacity = '0.6';
+        });
+        card.addEventListener('dragend', (e) => {
+            card.style.opacity = '1';
+        });
+    });
+
+    // ==================== 预测预览 ====================
+    function updatePredictionPreview() {
+        const totalFish = bottleContents.zebrafish;
+        const totalSnail = bottleContents.applesnail;
+        const totalPlants = bottleContents.hornwort;
+        const totalLiquid = getTotalLiquid();
+        const hasRiverWater = bottleContents.riverwater > 0;
+        const hasSoil = bottleContents.soil > 0;
+        const tapWaterUntreated = bottleContents.tapwater > 0 && !chlorineRemoved;
+
+        if (totalLiquid === 0 && totalFish === 0 && totalSnail === 0 && totalPlants === 0 && !hasSoil) {
+            $predSurvival.textContent = '--';
+            $predStable.textContent = '--';
+            $predStatus.textContent = '空瓶';
+            $predDetail.textContent = '请添加材料';
+            return;
+        }
+
+        let estimatedSurvival = 365;
+        let estimatedStable = 30;
+        let statusText = '待评估';
+        let detailParts = [];
+
+        // 未除氯自来水
+        if (tapWaterUntreated) {
+            estimatedSurvival = Math.min(estimatedSurvival, 3);
+            estimatedStable = Math.min(estimatedStable, 1);
+            statusText = '⚠️ 高风险';
+            detailParts.push('余氯毒性→第0-1天生物即可能死亡');
+        }
+
+        // 生物负载评估
+        if (totalFish > 3) {
+            estimatedSurvival = Math.min(estimatedSurvival, 5);
+            estimatedStable = Math.min(estimatedStable, 2);
+            statusText = '⚠️ 过载';
+            detailParts.push('斑马鱼过多→耗氧>产氧');
+        }
+        if (totalFish >= 2 && totalPlants === 0) {
+            estimatedSurvival = Math.min(estimatedSurvival, 3);
+            estimatedStable = Math.min(estimatedStable, 1);
+            statusText = '⚠️ 缺氧风险';
+            detailParts.push('无生产者→溶解氧持续下降');
+        }
+        if (totalPlants >= 3 && totalFish <= 1 && totalSnail <= 1) {
+            estimatedStable = Math.max(estimatedStable, 60);
+            if (!tapWaterUntreated) statusText = '✅ 良好';
+        }
+
+        // 硝化系统评估
+        if (!hasRiverWater && totalFish > 0 && !tapWaterUntreated) {
+            detailParts.push('无河水→硝化系统建立延迟(约14天)');
+            estimatedStable = Math.min(estimatedStable, 10);
+        }
+        if (hasRiverWater && totalFish > 0) {
+            detailParts.push('河水提供硝化菌→约7天建立硝化系统');
+            estimatedStable = Math.max(estimatedStable, 14);
+        }
+
+        // 营养土评估
+        if (bottleContents.soil > 25) {
+            detailParts.push('营养土过量→氨氮峰值可能超标');
+            estimatedStable = Math.min(estimatedStable, 5);
+        }
+        if (hasSoil && hasRiverWater && totalPlants >= 1 && totalFish >= 1 && !tapWaterUntreated && totalFish <= 2 &&
+            bottleContents.soil <= 20) {
+            statusText = '🌟 配置优良';
+            estimatedSurvival = Math.max(estimatedSurvival, 200);
+            estimatedStable = Math.max(estimatedStable, 60);
+        }
+
+        if (totalFish === 0 && totalSnail === 0) {
+            statusText = '💤 无消费者';
+            estimatedSurvival = 365;
+            estimatedStable = 365;
+            detailParts = ['无动物→系统极稳定但缺乏消费者环节'];
+        }
+
+        $predSurvival.textContent = estimatedSurvival >= 365 ? '>365' : '~' + estimatedSurvival;
+        $predStable.textContent = '~' + estimatedStable;
+        $predStatus.textContent = statusText;
+        $predDetail.textContent = detailParts.join('；') || '基于当前配置的预估';
+    }
+
+    // ==================== 模拟引擎 ====================
+    function initSimState() {
+        const hasRiverWater = bottleContents.riverwater > 0;
+        const hasSoil = bottleContents.soil > 0;
+        const tapWaterUntreated = bottleContents.tapwater > 0 && !chlorineRemoved;
+
+        simState = {
+            fishAlive: bottleContents.zebrafish,
+            snailAlive: bottleContents.applesnail,
+            plantHealth: '良好',
+            nh3: 0,
+            no2: 0,
+            no3: 0,
+            do: 7.5,
+            ph: 7.2,
+            nitrificationMaturity: hasRiverWater ? 10 : (hasSoil ? 3 : 0),
+            soilDecompositionRate: hasSoil ? (bottleContents.soil / 10) * 0.03 : 0,
+            hasRiverWater: hasRiverWater,
+            hasSoil: hasSoil,
+            tapWaterUntreated: tapWaterUntreated,
+            totalPlants: bottleContents.hornwort,
+            totalSoil: bottleContents.soil,
+            totalGravel: bottleContents.gravel,
+            totalLiquid: getTotalLiquid(),
+        };
+
+        // 余氯初始毒性
+        if (tapWaterUntreated) {
+            simState.nh3 += 0.3; // 余氯破坏硝化菌，间接影响
+            simState.do -= 1.5;
+        }
+
+        // 营养土初始氨氮
+        if (hasSoil) {
+            simState.nh3 += bottleContents.soil * 0.015;
+        }
+
+        // 河水带来初始菌群和一些营养
+        if (hasRiverWater) {
+            simState.nh3 += bottleContents.riverwater * 0.0003;
+            simState.no3 += bottleContents.riverwater * 0.0005;
+        }
+
+        initialSimState = JSON.parse(JSON.stringify(simState));
+    }
+
+    function simulateOneDay() {
+        const s = simState;
+        const day = currentDay + 1;
+
+        // === 余氯毒性（第0-2天） ===
+        if (s.tapWaterUntreated && day <= 2) {
+            const chlorineToxicity = day === 0 ? 0.8 : (day === 1 ? 0.5 : 0.2);
+            if (s.fishAlive > 0 && Math.random() < chlorineToxicity) {
+                s.fishAlive = Math.max(0, s.fishAlive - Math.ceil(s.fishAlive * chlorineToxicity));
+            }
+            if (s.snailAlive > 0 && Math.random() < chlorineToxicity * 0.7) {
+                s.snailAlive = Math.max(0, s.snailAlive - Math.ceil(s.snailAlive * chlorineToxicity * 0.7));
+            }
+            s.nitrificationMaturity = Math.max(0, s.nitrificationMaturity - 8);
+            s.do -= 0.8;
+        }
+
+        // === 光合作用（12小时光照） ===
+        const effectivePlants = s.plantHealth === '良好' ? s.totalPlants : (s.plantHealth === '发黄' ? s.totalPlants *
+            0.5 : s.totalPlants * 0.15);
+        const photoOxygen = effectivePlants * 0.5; // 产氧
+        const photoNh3Uptake = effectivePlants * 0.02; // 吸收氨氮
+        s.do += photoOxygen;
+        s.nh3 = Math.max(0, s.nh3 - photoNh3Uptake);
+
+        // === 生物呼吸耗氧 ===
+        const fishOxygenConsumption = s.fishAlive * 0.2;
+        const snailOxygenConsumption = s.snailAlive * 0.1;
+        s.do -= fishOxygenConsumption + snailOxygenConsumption;
+
+        // === 夜间呼吸（额外耗氧） ===
+        const nightOxygenConsumption = effectivePlants * 0.15 + s.fishAlive * 0.08 + s.snailAlive * 0.04;
+        s.do -= nightOxygenConsumption;
+
+        // === 生物产氨氮 ===
+        s.nh3 += s.fishAlive * 0.2 + s.snailAlive * 0.1;
+
+        // === 营养土分解产氨氮 ===
+        if (s.hasSoil && s.totalSoil > 0) {
+            const decompositionNh3 = s.soilDecompositionRate * (1 - day / 500);
+            s.nh3 += Math.max(0.005, decompositionNh3);
+        }
+
+        // === 硝化作用 ===
+        const nitroCapacity = s.nitrificationMaturity / 100;
+        const nh3ToNo2 = Math.min(s.nh3 * 0.25, s.nh3 * nitroCapacity * 0.8 + 0.01);
+        s.nh3 = Math.max(0, s.nh3 - nh3ToNo2);
+        s.no2 += nh3ToNo2 * 0.9;
+
+        const no2ToNo3 = Math.min(s.no2 * 0.2, s.no2 * nitroCapacity * 0.7 + 0.005);
+        s.no2 = Math.max(0, s.no2 - no2ToNo3);
+        s.no3 += no2ToNo3;
+
+        // 硝化耗氧
+        s.do -= (nh3ToNo2 + no2ToNo3) * 0.3;
+
+        // 硝化系统成熟度增长
+        if (s.hasRiverWater || s.hasSoil) {
+            const maturityGain = s.hasRiverWater ? 1.8 : 0.8;
+            s.nitrificationMaturity = Math.min(100, s.nitrificationMaturity + maturityGain);
+        } else if (s.totalGravel > 0) {
+            s.nitrificationMaturity = Math.min(100, s.nitrificationMaturity + 0.3);
+        }
+
+        // === pH调整 ===
+        if (s.no3 > 5) s.ph -= 0.02;
+        if (s.nh3 > 0.3) s.ph += 0.01;
+        s.ph = Math.max(6.5, Math.min(7.8, s.ph + (Math.random() - 0.5) * 0.03));
+
+        // === 溶解氧限制 ===
+        s.do = Math.max(0, Math.min(14, s.do));
+
+        // === 生物死亡判定 ===
+        let fishDiedToday = 0;
+        let snailDiedToday = 0;
+
+        if (s.do < 2 && s.fishAlive > 0) {
+            fishDiedToday = Math.min(s.fishAlive, Math.ceil((2 - s.do) / 2 * s.fishAlive));
+            s.fishAlive = Math.max(0, s.fishAlive - fishDiedToday);
+        }
+        if (s.nh3 > 0.5 && s.fishAlive > 0) {
+            const nh3Kill = Math.min(s.fishAlive, Math.ceil((s.nh3 - 0.5) * 3 * s.fishAlive));
+            s.fishAlive = Math.max(0, s.fishAlive - nh3Kill);
+            fishDiedToday += nh3Kill;
+        }
+        if (s.no2 > 0.1 && s.fishAlive > 0) {
+            const no2Kill = Math.min(s.fishAlive, Math.ceil((s.no2 - 0.1) * 10 * s.fishAlive));
+            s.fishAlive = Math.max(0, s.fishAlive - no2Kill);
+            fishDiedToday += no2Kill;
+        }
+
+        if (s.do < 0.5 && s.snailAlive > 0) {
+            snailDiedToday = Math.min(s.snailAlive, Math.ceil((0.5 - s.do) * 2 * s.snailAlive));
+            s.snailAlive = Math.max(0, s.snailAlive - snailDiedToday);
+        }
+        if (s.nh3 > 0.8 && s.snailAlive > 0) {
+            const nh3SnailKill = Math.min(s.snailAlive, Math.ceil((s.nh3 - 0.8) * 2 * s.snailAlive));
+            s.snailAlive = Math.max(0, s.snailAlive - nh3SnailKill);
+            snailDiedToday += nh3SnailKill;
+        }
+
+        // === 植物健康 ===
+        if (s.nh3 > 0.6 || s.do < 1.5) {
+            if (s.plantHealth === '良好') s.plantHealth = '发黄';
+            else if (s.plantHealth === '发黄' && day > 10) s.plantHealth = '腐烂';
+        } else if (s.plantHealth === '发黄' && s.nh3 < 0.3 && s.do > 3 && Math.random() < 0.3) {
+            s.plantHealth = '良好';
+        }
+
+        // === 记录首次不稳定日 ===
+        const isUnstable = s.fishAlive < initialSimState.fishAlive ||
+            s.snailAlive < initialSimState.snailAlive ||
+            s.nh3 > 0.5 || s.no2 > 0.1 || s.do < 3;
+        if (isUnstable && firstUnstableDay === null) {
+            firstUnstableDay = day;
+        }
+
+        // === 记录最后死亡日 ===
+        if (s.fishAlive === 0 && initialSimState.fishAlive > 0 && lastDeathDay === null) {
+            lastDeathDay = day;
+        }
+
+        // === 稳定性计数 ===
+        const isStable = s.fishAlive === initialSimState.fishAlive &&
+            s.snailAlive === initialSimState.snailAlive &&
+            s.nh3 < 0.5 && s.no2 < 0.1 && s.do > 3 && s.fishAlive > 0;
+        if (isStable) {
+            consecutiveStableDays++;
+            if (consecutiveStableDays >= 14 && stableRunDays === 0 && firstUnstableDay === null) {
+                stableRunDays = day;
+            }
+        } else {
+            consecutiveStableDays = 0;
+        }
+
+        // 更新稳定运行天数
+        if (firstUnstableDay !== null && stableRunDays === 0) {
+            stableRunDays = firstUnstableDay;
+        }
+        if (firstUnstableDay === null && day >= 14 && consecutiveStableDays >= 14 && stableRunDays === 0) {
+            stableRunDays = day;
+        }
+
+        currentDay = day;
+    }
+
+    function getBehaviorDescription(day, fishDied, snailDied) {
+        let parts = [];
+        if (fishDied > 0) parts.push(`🐟死亡${fishDied}条`);
+        if (snailDied > 0) parts.push(`🐌死亡${snailDied}只`);
+        if (simState.do < 2 && simState.fishAlive > 0) parts.push('鱼呼吸急促');
+        if (simState.nh3 > 0.4) parts.push('氨氮偏高');
+        if (simState.no2 > 0.08) parts.push('亚硝酸盐警戒');
+        if (simState.plantHealth === '发黄') parts.push('金鱼藻发黄');
+        if (simState.plantHealth === '腐烂') parts.push('金鱼藻腐烂');
+        if (simState.do > 5 && simState.nh3 < 0.2 && simState.no2 < 0.05 && simState.fishAlive > 0 && day > 0)
+            parts.push('生态系统稳定');
+        if (simState.fishAlive === 0 && simState.snailAlive === 0 && initialSimState.fishAlive > 0) parts.push('💀全部死亡');
+        if (parts.length === 0) parts.push('正常');
+        return parts.join('；');
+    }
+
+    function getWaterQualityLabel() {
+        if (simState.nh3 > 0.5 || simState.no2 > 0.1 || simState.do < 2) return 'danger';
+        if (simState.nh3 > 0.3 || simState.no2 > 0.06 || simState.do < 3.5) return 'warn';
+        return 'safe';
+    }
+
+    function addRecordRow(day, fishDied, snailDied) {
+        const label = getWaterQualityLabel();
+        const labelText = label === 'safe' ? '安全' : (label === 'warn' ? '警戒' : '危险');
+        const labelClass = 'status-' + label;
+        const behavior = getBehaviorDescription(day, fishDied, snailDied);
+        const fishClass = simState.fishAlive < initialSimState.fishAlive ? ' dead-cell' : '';
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${day}</td>
+            <td class="${fishClass}">${simState.fishAlive}</td>
+            <td>${simState.snailAlive}</td>
+            <td>${simState.plantHealth}</td>
+            <td>${simState.nh3.toFixed(2)}</td>
+            <td>${simState.no2.toFixed(2)}</td>
+            <td>${simState.no3.toFixed(2)}</td>
+            <td>${simState.do.toFixed(1)}</td>
+            <td>${simState.ph.toFixed(2)}</td>
+            <td><span class="${labelClass}">${labelText}</span></td>
+            <td style="font-size:0.62rem;max-width:80px;">${behavior}</td>
+        `;
+        if (fishDied > 0 || snailDied > 0 || label === 'danger') {
+            row.classList.add('highlight-row');
+        }
+        $recordBody.appendChild(row);
+
+        // 自动滚动到底部
+        $recordTableWrap.scrollTop = $recordTableWrap.scrollHeight;
+    }
+
+    function updatePredictionResults() {
+        if (simState.fishAlive === 0 && initialSimState.fishAlive > 0) {
+            survivalDays = lastDeathDay || currentDay;
+            $predSurvival.textContent = survivalDays;
+            $predSurvival.classList.add('doomed');
+        } else if (currentDay >= 365) {
+            survivalDays = 365;
+            $predSurvival.textContent = '>365';
+            $predSurvival.classList.remove('doomed');
+        } else if (simState.fishAlive > 0 || initialSimState.fishAlive === 0) {
+            $predSurvival.textContent = '>当前' + currentDay;
+            $predSurvival.classList.remove('doomed');
+        }
+
+        if (stableRunDays > 0) {
+            $predStable.textContent = stableRunDays;
+        } else if (firstUnstableDay !== null) {
+            $predStable.textContent = firstUnstableDay;
+        } else if (currentDay > 0 && consecutiveStableDays < 14) {
+            $predStable.textContent = '>' + currentDay + ' (未满14天)';
+        } else {
+            $predStable.textContent = '>' + currentDay;
+        }
+
+        if (simState.fishAlive === 0 && initialSimState.fishAlive > 0) {
+            $predStatus.textContent = '💀 系统崩溃';
+        } else if (consecutiveStableDays >= 14 && simState.fishAlive > 0) {
+            $predStatus.textContent = '✅ 稳定运行';
+        } else if (currentDay > 0) {
+            $predStatus.textContent = '⏳ 观察中';
+        }
+
+        let detail = '';
+        if (simState.fishAlive === 0 && initialSimState.fishAlive > 0) {
+            if (simState.tapWaterUntreated && currentDay <= 3) detail = '崩溃原因：余氯毒性';
+            else if (simState.do < 1) detail = '崩溃原因：溶解氧耗尽';
+            else if (simState.nh3 > 0.5) detail = '崩溃原因：氨氮累积超标';
+            else if (simState.no2 > 0.1) detail = '崩溃原因：亚硝酸盐中毒（新缸综合征）';
+            else detail = '崩溃原因：多重因素';
+        } else if (consecutiveStableDays >= 14) {
+            detail = '已连续稳定' + consecutiveStableDays + '天，氮循环闭环';
+        }
+        $predDetail.textContent = detail;
+    }
+
+    // ==================== 模拟控制 ====================
+    function startSimulation() {
+        if (simulationSealed) {
+            showToast('🔒 已密封，请重置后重新开始', true);
+            return;
+        }
+        const totalLiquid = getTotalLiquid();
+        if (totalLiquid < 100) {
+            showToast('💧 请至少加入100ml液体（河水或自来水）', true);
+            return;
+        }
+        if (totalLiquid > BOTTLE_MAX_LIQUID) {
+            showToast(`⚠️ 液体超过${BOTTLE_MAX_LIQUID}ml上限！`, true);
+            return;
+        }
+
+        // 密封
+        simulationSealed = true;
+        simulationRunning = true;
+        currentDay = 0;
+        lastDeathDay = null;
+        firstUnstableDay = null;
+        consecutiveStableDays = 0;
+        stableRunDays = 0;
+        survivalDays = null;
+        $recordBody.innerHTML = '';
+
+        initSimState();
+        updateWaterVisual();
+        updateBottleIcons();
+
+        // 添加第0天记录
+        addRecordRow(0, 0, 0);
+
+        // 更新UI
+        $btnStart.disabled = true;
+        $btnStart.textContent = '🔒 已密封·运行中';
+        $btnStep.disabled = false;
+        $btnAuto.disabled = false;
+        document.getElementById('materialsPanel').style.opacity = '0.6';
+        document.getElementById('materialsPanel').style.pointerEvents = 'none';
+
+        updatePredictionResults();
+        updatePredictionPreview();
+        showToast('🔒 生态瓶已密封！模拟开始运行');
+    }
+
+    function stepDay() {
+        if (!simulationSealed || !simulationRunning) {
+            showToast('请先密封并开始模拟', true);
+            return;
+        }
+        if (currentDay >= 365) {
+            showToast('🏁 已运行365天，模拟结束');
+            stopAutoRun();
+            return;
+        }
+        if (simState.fishAlive === 0 && initialSimState.fishAlive > 0 && currentDay > 0) {
+            showToast('💀 所有斑马鱼已死亡，生态系统崩溃', true);
+            stopAutoRun();
+            updatePredictionResults();
+            return;
+        }
+
+        const prevFish = simState.fishAlive;
+        const prevSnail = simState.snailAlive;
+        simulateOneDay();
+        const fishDied = prevFish - simState.fishAlive;
+        const snailDied = prevSnail - simState.snailAlive;
+        addRecordRow(currentDay, fishDied, snailDied);
+        updateWaterVisual();
+        updateBottleIcons();
+        updatePredictionResults();
+
+        // 检查是否结束
+        if (simState.fishAlive === 0 && initialSimState.fishAlive > 0) {
+            showToast('💀 所有斑马鱼已死亡，生态系统崩溃', true);
+            stopAutoRun();
+            updatePredictionResults();
+        }
+        if (currentDay >= 365) {
+            showToast('🏁 已运行365天，生态瓶成功存活！');
+            stopAutoRun();
+            updatePredictionResults();
+        }
+    }
+
+    function toggleAutoRun() {
+        if (autoRunInterval) {
+            stopAutoRun();
+            return;
+        }
+        if (!simulationSealed || !simulationRunning) {
+            showToast('请先密封并开始模拟', true);
+            return;
+        }
+        if (currentDay >= 365 || (simState.fishAlive === 0 && initialSimState.fishAlive > 0 && currentDay > 0)) {
+            showToast('模拟已结束，请重置', true);
+            return;
+        }
+        startAutoRun();
+    }
+
+    function startAutoRun() {
+        $btnAuto.textContent = '⏸ 暂停';
+        $btnAuto.style.background = '#f0e0d0';
+        $btnAuto.style.borderColor = '#d0a080';
+        $btnStep.disabled = true;
+        autoRunInterval = setInterval(() => {
+            if (currentDay >= 365 || (simState.fishAlive === 0 && initialSimState.fishAlive > 0 && currentDay >
+                    0)) {
+                stopAutoRun();
+                updatePredictionResults();
+                return;
+            }
+            stepDay();
+        }, autoRunSpeed);
+    }
+
+    function stopAutoRun() {
+        if (autoRunInterval) {
+            clearInterval(autoRunInterval);
+            autoRunInterval = null;
+        }
+        $btnAuto.textContent = '▶ 自动运行';
+        $btnAuto.style.background = '';
+        $btnAuto.style.borderColor = '';
+        if (simulationSealed) {
+            $btnStep.disabled = false;
+        }
+    }
+
+    function updateSpeed() {
+        autoRunSpeed = parseInt(document.getElementById('speedSelect').value);
+        if (autoRunInterval) {
+            stopAutoRun();
+            startAutoRun();
+        }
+    }
+
+    function resetAll() {
+        stopAutoRun();
+        simulationRunning = false;
+        simulationSealed = false;
+        currentDay = 0;
+        lastDeathDay = null;
+        firstUnstableDay = null;
+        consecutiveStableDays = 0;
+        stableRunDays = 0;
+        survivalDays = null;
+        bottleContents = {
+            hornwort: 0,
+            zebrafish: 0,
+            applesnail: 0,
+            riverwater: 0,
+            tapwater: 0,
+            soil: 0,
+            gravel: 0,
+        };
+        simState = {
+            fishAlive: 0,
+            snailAlive: 0,
+            plantHealth: '良好',
+            nh3: 0,
+            no2: 0,
+            no3: 0,
+            do: 7.5,
+            ph: 7.2,
+            nitrificationMaturity: 0,
+            soilDecompositionRate: 0,
+            hasRiverWater: false,
+            hasSoil: false,
+            tapWaterUntreated: false,
+            totalPlants: 0,
+            totalSoil: 0,
+            totalGravel: 0,
+            totalLiquid: 0,
+        };
+        initialSimState = null;
+        chlorineRemoved = false;
+        document.getElementById('chlorineRemoved').checked = false;
+        $chlorineWarning.classList.remove('active');
+        $recordBody.innerHTML = `
+            <tr id="rowDay0">
+                <td>0</td><td id="d0_fish">0</td><td id="d0_snail">0</td><td id="d0_plant">良好</td>
+                <td id="d0_nh3">0.00</td><td id="d0_no2">0.00</td><td id="d0_no3">0.00</td>
+                <td id="d0_do">7.5</td><td id="d0_ph">7.20</td>
+                <td><span class="status-safe">安全</span></td><td>初始设置</td>
+            </tr>`;
+        $btnStart.disabled = false;
+        $btnStart.textContent = '🔒 密封并开始模拟';
+        $btnStep.disabled = true;
+        $btnAuto.disabled = true;
+        $btnAuto.textContent = '▶ 自动运行';
+        $btnAuto.style.background = '';
+        $btnAuto.style.borderColor = '';
+        document.getElementById('materialsPanel').style.opacity = '1';
+        document.getElementById('materialsPanel').style.pointerEvents = 'auto';
+        $predSurvival.textContent = '--';
+        $predSurvival.classList.remove('doomed');
+        $predStable.textContent = '--';
+        $predStatus.textContent = '待开始';
+        $predDetail.textContent = '';
+        updateBottleContentsList();
+        updateWaterVisual();
+        updateBottleIcons();
+        updatePredictionPreview();
+        showToast('🔄 实验已重置，可以重新配置材料');
+    }
+
+    // ==================== 初始化 ====================
+    function init() {
+        updateBottleContentsList();
+        updateWaterVisual();
+        updateBottleIcons();
+        updatePredictionPreview();
+        $btnStep.disabled = true;
+        $btnAuto.disabled = true;
+        document.getElementById('chlorineRemoved').checked = false;
+        chlorineRemoved = false;
+    }
+
+    // 页面加载完成后初始化
+    document.addEventListener('DOMContentLoaded', init);
+
+    // 键盘快捷键
+    document.addEventListener('keydown', (e) => {
+        if (e.key === ' ' && simulationSealed && simulationRunning && !autoRunInterval) {
+            e.preventDefault();
+            stepDay();
+        } else if (e.key === 'r' && e.ctrlKey) {
+            e.preventDefault();
+            resetAll();
+        } else if (e.key === 'a' && e.ctrlKey && simulationSealed) {
+            e.preventDefault();
+            toggleAutoRun();
+        }
+    });
+
+    console.log('🌿 生态瓶模拟实验已就绪');
+    console.log('   - 拖放材料或点击+按钮添加材料');
+    console.log('   - 点击"密封并开始模拟"启动');
+    console.log('   - 空格键推进1天，Ctrl+A自动运行，Ctrl+R重置');
+    console.log('   - 基于真实生态学原理：生产者-消费者-分解者、氮循环、溶解氧昼夜变化');
+    console.log('   - 稳定性判据：氨氮<0.5, 亚硝酸盐<0.1, DO>3mg/L, 零死亡连续14天');
+</script>
+</body>
+</html>
